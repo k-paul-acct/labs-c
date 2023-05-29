@@ -5,62 +5,63 @@
 #define MAX_LEN 20
 #define NUM_ELEMENTS 10
 
-typedef struct {
-    char identifier[MAX_LEN];
-} list_element;
+typedef struct node {
+    char value[MAX_LEN];
+    struct node* next;
+} node;
 
-typedef struct {
-    list_element elements[NUM_ELEMENTS];
-    int numElements;
-} list;
-
-void print_list(list *list);
-void remove_elems(list *list, int k);
-void add_elem(list *list, char *newIdentifier);
+void print_list(node* root);
+void remove_after(node* root, int index);
+void add_elem(node* root, char* value);
 
 int main() {
-    list list;
-    list.numElements = NUM_ELEMENTS;
+    node* root = malloc(sizeof(node));
+    root->next = NULL;
+    node* curr = root;
 
-    for (int i = 0; i < NUM_ELEMENTS; i++) {
-        list_element element;
-        sprintf(element.identifier, "This is %d elem", i + 1);
-        list.elements[i] = element;
+    for (int i = 0; i < NUM_ELEMENTS; ++i) {
+        sprintf(curr->value, "This is %d elem", i + 1);
+
+        if (i < NUM_ELEMENTS - 1) {
+            node* next = malloc(sizeof(node));
+            next->next = NULL;
+            curr->next = next;
+            curr = next;
+        }
     }
 
-    print_list(&list);
+    print_list(root);
 
-    remove_elems(&list, 7);
+    remove_after(root, 5);
 
     printf("\nList after removing after 6:\n");
-    print_list(&list);
+    print_list(root);
 
-    add_elem(&list, "This is 5 elem");
+    add_elem(root, "This is 5 elem");
 
     printf("\nList after adding 'This is 5 elem':\n");
-    print_list(&list);
-
-    return 0;
+    print_list(root);
 }
 
-void print_list(list *list) {
+void print_list(node* root) {
     printf("List contents:\n");
-    for (int i = 0; i < list->numElements; i++) {
-        printf("%s\n", list->elements[i].identifier);
-    }
+    for (; root != NULL; root = root->next) printf("%s\n", root->value);
 }
 
-void remove_elems(list *list, int k) {
-    for (int i = 0; i < list->numElements; ++i) {
-        if (i + 1 < k) continue;
-
-        list->numElements = i;
+void remove_after(node* root, int index) {
+    for (int i = 0; root != NULL; root = root->next, ++i) {
+        if (i < index) continue;
+        root->next = NULL;
         break;
     }
 }
 
-void add_elem(list *list, char *newIdentifier) {
-    list_element newElement;
-    strcpy(newElement.identifier, newIdentifier);
-    list->elements[list->numElements++] = newElement;
+void add_elem(node* root, char* value) {
+    for (; root->next != NULL; root = root->next) {
+    }
+
+    node* new = malloc(sizeof(node));
+    new->next = NULL;
+    strcpy(new->value, value);
+    root->next = new;
 }
